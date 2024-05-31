@@ -1,14 +1,9 @@
 use scraper::{selectable::Selectable, Html, Selector};
 
-const URL:&str = "https://www.bcv.org.ve/tasas-informativas-sistema-bancario";
+const URL: &str = "https://www.bcv.org.ve/tasas-informativas-sistema-bancario";
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let html = reqwest::get(URL)
-        .await?
-        .text()
-        .await?;
-
-    let document = Html::parse_document(&html);
+    let document = fetch_html().await?;
     let dolar_selector = Selector::parse("div#dolar")?;
     let results = document.select(&dolar_selector);
 
@@ -20,4 +15,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
     }
     Ok(())
+}
+
+async fn fetch_html() -> Result<Html, Box<dyn std::error::Error>> {
+    let html = reqwest::get(URL).await?.text().await?;
+
+    let document = Html::parse_document(&html);
+    Ok(document)
 }
